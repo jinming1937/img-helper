@@ -6,6 +6,13 @@
 
 .page-container {
   padding: 16px;
+  margin: 0 auto;
+}
+
+@media (min-width: 1080px) {
+  .page-container{
+    max-width: 1080px;
+  }
 }
 
 .container {
@@ -35,6 +42,10 @@
 }
 
 .off {
+  display: none;
+}
+
+.hide {
   display: none;
 }
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Img-Helper</title>
   <link rel="stylesheet" href="./css/styles.css">
   <script src="./js/main.js"></script>
 </head>
@@ -13,11 +13,22 @@
       <div id="dropzone" class="dropzone">
         <canvas id="canvas" class="canvas_box"></canvas>
       </div>
-      <input type="text" id="size" class="txt">
+      <input type="range" id="range" min="20" max="200" value="100" class="range">
+      <input type="text" id="size" class="txt hide">
+      <input type="text" id="size_rate" class="txt hide">
     </div>
     <div>
       <div>
-        <input type="button" value="inner cut" id="useCut" />
+        <select id="select_size" value="">
+          <option value="0">请选择...</option>
+          <option value="250x122">250x122</option>
+          <option value="122x250">122x250</option>
+          <option value="296x128">296x128</option>
+          <option value="128x296">128x296</option>
+          <option value="400x300">400x300</option>
+          <option value="640x384">640x384</option>
+        </select>
+        <!-- <input type="button" value="inner cut" id="useCut" /> -->
         <input type="button" value="export" id="export" />
        </div>
       <div>
