@@ -18,6 +18,8 @@
 .container {
   border: 2px dashed #ccc;
   padding: 20px;
+  min-height: 450px;
+  min-width: 800px;
 }
 
 .dropzone {
@@ -41,29 +43,44 @@
   font-size: 14px;
 }
 
-.off {
-  display: none;
-}
-
 .hide {
   display: none;
 }
-
-.block {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(182, 182, 182, 0.5);
+.status-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  height: 34px;
+}
+.range-bar {
+  font-size: 14px;
+  margin-right: 20px;
+}
+.range {
+  height: 20px;
+  vertical-align: bottom;
+}
+.view-rate {
+  width: 50px;
+  height: 20px;
+  border: none;
+  background: none;
+  vertical-align: bottom;
+}
+.def_size{
+  height: 20px;
+  font-size: 14px;
+  margin-right: 20px;
+}
+.export-btn {
+  height: 20px;
+  outline: none;
+  border: none;
+  background: #e2e2e2;
+  padding: 0 4px;
+  border-radius: 4px;
 }
 
-.rect {
-  position: absolute;
-  top: 0;
-  left: 0;
-  border: 2px solid #333;
-  width: 400px;
-  height: 300px;
-  cursor: all-scroll;
+.export-btn:active {
+  background-color: #cfcfcf;
 }

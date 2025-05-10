@@ -9,30 +9,30 @@
 </head>
 <body>
   <div class="page-container">
-    <div class="container max-w-md p-6 bg-white rounded shadow">
+    <div class="container">
       <div id="dropzone" class="dropzone">
         <canvas id="canvas" class="canvas_box"></canvas>
       </div>
-      <input type="range" id="range" min="20" max="200" value="100" class="range">
-      <input type="text" id="size" class="txt hide">
-      <input type="text" id="size_rate" class="txt hide">
     </div>
-    <div>
-      <div>
-        <select id="select_size" value="">
-          <option value="0">请选择...</option>
-          <option value="250x122">250x122</option>
-          <option value="122x250">122x250</option>
-          <option value="296x128">296x128</option>
-          <option value="128x296">128x296</option>
-          <option value="400x300">400x300</option>
-          <option value="640x384">640x384</option>
-        </select>
-        <!-- <input type="button" value="inner cut" id="useCut" /> -->
-        <input type="button" value="export" id="export" />
-       </div>
-      <div>
+    <div class="status-bar">
+      <div class="range-bar">
+        <span>缩放比例(20%~200%)</span>
+        <input type="range" id="range" min="20" max="200" value="100" class="range">
+        <span class="view-rate" id="range_val" />100%</span>
       </div>
+      <select id="select_size" value="" class="def_size">
+        <option value="0">请选择截图尺寸...</option>
+        <option value="250x122">250x122</option>
+        <option value="122x250">122x250</option>
+        <option value="296x128">296x128</option>
+        <option value="128x296">128x296</option>
+        <option value="400x300">400x300</option>
+        <option value="640x384">640x384</option>
+      </select>
+      <input class="export-btn" type="button" value="导出" id="export" />
+    </div>
+    <div class="hide">
+
     </div>
   </div>
 </body>

@@ -5,7 +5,7 @@
     class DrawingBoard {
       constructor() {
         this.range = document.getElementById('range');
-        this.sizeRateDom = document.getElementById("size_rate");
+        this.rangeVal = document.getElementById('range_val');
         this.canvas = document.getElementById("canvas");
         this.selectSize = document.getElementById('select_size');
         this.context = this.canvas.getContext("2d");
@@ -45,6 +45,7 @@
       initRnage() {
         this.range.addEventListener('input', e => {
           this.scale = Number(e.target.value);
+          this.rangeVal.innerText = `${e.target.value}%`;
           this.render();
         });
       }
@@ -70,7 +71,6 @@
             mousePoint.x = offsetX;
             mousePoint.y = offsetY;
             this.render();
-            // this.showPosition();
           }
         }
 
@@ -99,6 +99,7 @@
               }
             }
             this.range.value = this.scale;
+            this.rangeVal.innerText = `${this.scale}%`;
             const x = offsetX - offsetX * this.Scale;
             const y = offsetY - offsetY * this.Scale;
             this.renderPosition.x = Math.floor(x * this.dpr);
@@ -110,7 +111,6 @@
             this.renderPosition.y -= deltaY;
             this.render();
           }
-          this.showPosition();
         }
 
         this.canvas.addEventListener("mousedown", down);
@@ -140,6 +140,10 @@
 
         const exportImg = document.getElementById('export');
         exportImg.addEventListener('click', () => {
+          if(!this.showRect) {
+            alert('请选择截图尺寸');
+            return;
+          }
           const { x, y, width, height } = this.exportPosition;
           const imageData = this.context.getImageData(x, y, width * this.dpr, height * this.dpr);
           
@@ -158,16 +162,12 @@
           // 将 DataURL 赋值给 <a> 元素的 href 属性
           link.href = dataURL;
           // 设置下载的文件名
-          link.download = 'signature.png';
+          link.download = `img-${this.selectSize.value}-${Date.now()}.png`;
           // 将签名图片元素的 src 属性设置为画布内容的 DataURL
           // signatureImage.src = canView.toDataURL('image/png');
           // 触发 <a> 元素的点击事件，以便下载图片
           link.click();
         });
-      }
-
-      showPosition() {
-        this.sizeRateDom.value = `rate:${Math.ceil(this.Scale * 100)},x:${Math.floor(this.renderPosition.x)},y:${Math.floor(this.renderPosition.y)}`;
       }
 
       cutRect(showRect) {
@@ -239,7 +239,6 @@
       drawingBoard.drawText("拖拽/粘贴图片上传...."); // 默认文案
 
       const dropzone = document.getElementById("dropzone");
-      const sizeDom = document.getElementById("size");
 
       function preventDefaults(e) {
         e.preventDefault();
@@ -269,7 +268,6 @@
           0, 0, width, height,
           0, 0, width, height,
         );
-        sizeDom.value = `img:${img.width}x${img.height},canvas:${canvas.width}x${canvas.height}`;
       };
       // 阻止默认的拖放行为
       ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
