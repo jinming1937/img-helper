@@ -104,12 +104,12 @@
             }
             this.range.value = this.scale;
             this.rangeVal.innerText = `${this.scale}%`;
-            const dx = offsetX // - this.renderPosition.x / this.Scale;
-            const dy = offsetY // - this.renderPosition.y / this.Scale;
+            const dx = offsetX * this.dpr - this.renderPosition.x;
+            const dy = offsetY * this.dpr - this.renderPosition.y;
             const x = dx - dx * this.Scale;
             const y = dy - dy * this.Scale;
-            this.renderPositionFormScale.x = Math.floor(x * this.dpr);
-            this.renderPositionFormScale.y = Math.floor(y * this.dpr);
+            this.renderPositionFormScale.x = x;
+            this.renderPositionFormScale.y = y;
             this.render();
           } else {
             // 更新 image 偏移
