@@ -23,10 +23,12 @@
         };
         /** 绘制原点：控制平移 */
         this.renderPosition = {x: 0, y: 0};
+        /** 绘制原点：控制缩放 */
+        this.renderPositionFormScale = { x: 0, y: 0 };
         const rect = this.resize();
         this.resizeOffscreen(rect);
         this.initEvent();
-        this.initRnage();
+        this.initRange();
       }
 
       get Scale() {
@@ -38,11 +40,13 @@
         this.scale = 100;
         this.renderPosition.x = 0;
         this.renderPosition.y = 0;
+        this.renderPositionFormScale.x = 0;
+        this.renderPositionFormScale.y = 0;
         this.selectSize.value = 0;
         this.showRect = false;
       }
 
-      initRnage() {
+      initRange() {
         this.range.addEventListener('input', e => {
           this.scale = Number(e.target.value);
           this.rangeVal.innerText = `${e.target.value}%`;
@@ -79,7 +83,7 @@
           mousePoint.x = 0;
           mousePoint.y = 0;
         }
-
+        // TODO: 移动+缩放
         const wheel = (e) => {
           const {deltaX, deltaY, offsetX, offsetY, ctrlKey, metaKey, deltaMode} = e;
           e.preventDefault(); // 阻止浏览器的缩放行为
@@ -100,10 +104,12 @@
             }
             this.range.value = this.scale;
             this.rangeVal.innerText = `${this.scale}%`;
-            const x = offsetX - offsetX * this.Scale;
-            const y = offsetY - offsetY * this.Scale;
-            this.renderPosition.x = Math.floor(x * this.dpr);
-            this.renderPosition.y = Math.floor(y * this.dpr);
+            const dx = offsetX // - this.renderPosition.x / this.Scale;
+            const dy = offsetY // - this.renderPosition.y / this.Scale;
+            const x = dx - dx * this.Scale;
+            const y = dy - dy * this.Scale;
+            this.renderPositionFormScale.x = Math.floor(x * this.dpr);
+            this.renderPositionFormScale.y = Math.floor(y * this.dpr);
             this.render();
           } else {
             // 更新 image 偏移
@@ -114,13 +120,13 @@
         }
 
         this.canvas.addEventListener("mousedown", down);
-        this.canvas.addEventListener("touchstart", down);
+        this.canvas.addEventListener('touchstart', down);
         this.canvas.addEventListener("mousemove", move);
-        this.canvas.addEventListener("touchmove", move);
-        this.canvas.addEventListener("wheel", wheel);
+        this.canvas.addEventListener('touchmove', move);
+        this.canvas.addEventListener("wheel", wheel); /// 应该用于scroll;
         this.canvas.addEventListener("mouseup", up);
         // canvas.addEventListener('mouseover', up);
-        this.canvas.addEventListener("touchend", up);
+        this.canvas.addEventListener('touchend', up);
 
 
         this.selectSize.addEventListener('change', e => {
@@ -139,28 +145,31 @@
         });
 
         const exportImg = document.getElementById('export');
+        const offline = new OffscreenCanvas(400 * this.dpr, 300 * this.dpr);
+        const offContext = offline.getContext('2d');
+
+        const canView = document.createElement('canvas');
+        const ctx = canView.getContext('2d');
         exportImg.addEventListener('click', () => {
           if(!this.showRect) {
             alert('请选择截图尺寸');
             return;
           }
           const { x, y, width, height } = this.exportPosition;
-          const imageData = this.context.getImageData(x, y, width * this.dpr, height * this.dpr);
-          
-          const offline = new OffscreenCanvas(width * this.dpr, height * this.dpr);
-          const offContext = offline.getContext('2d');
+          const exportWidth = width * this.dpr;
+          const exportHeight = height * this.dpr;
+          const imageData = this.context.getImageData(x, y, exportWidth, exportHeight);
+          offline.width = exportWidth;
+          offline.height = exportHeight;
           offContext.putImageData(imageData, 0, 0);
 
-          const canView = document.createElement('canvas');
           canView.width = width;
           canView.height = height;
-          const ctx = canView.getContext('2d');
-          ctx.drawImage(offline, 0, 0, width * this.dpr, height * this.dpr, 0, 0, width, height);
+          ctx.drawImage(offline, 0, 0, exportWidth, exportHeight, 0, 0, width, height);
 
-          const dataURL = canView.toDataURL('image/png');
           const link = document.createElement('a');
           // 将 DataURL 赋值给 <a> 元素的 href 属性
-          link.href = dataURL;
+          link.href = canView.toDataURL('image/png');
           // 设置下载的文件名
           link.download = `img-${this.selectSize.value}-${Date.now()}.png`;
           // 将签名图片元素的 src 属性设置为画布内容的 DataURL
@@ -222,7 +231,8 @@
         this.context.save();
         const scale = this.Scale;
         const { x, y } = this.renderPosition;
-        this.context.translate(x, y);
+        const { x: scaleX, y: scaleY } = this.renderPositionFormScale;
+        this.context.translate(x + scaleX, y + scaleY);
         this.context.scale(scale, scale);
         this.context.drawImage(
           this.offscreenCanvas,
@@ -236,9 +246,9 @@
 
     function main() {
       const drawingBoard = new DrawingBoard();
-      drawingBoard.drawText("拖拽/粘贴图片上传...."); // 默认文案
 
       const dropzone = document.getElementById("dropzone");
+      const uploadFile = document.getElementById('upload_file');
 
       function preventDefaults(e) {
         e.preventDefault();
@@ -253,21 +263,15 @@
       };
       img.onload = () => {
         drawingBoard.resetCanvas();
-        const { canvas, context, offscreenCanvas, offscreenContext } = drawingBoard;
+        const { context, offscreenCanvas, offscreenContext } = drawingBoard;
         drawingBoard.clear();
         // save
-        const width = img.width * 2;
-        const height = img.height * 2;
+        const width = img.width;
+        const height = img.height;
         drawingBoard.resizeOffscreen({ width, height });
-        // img 放大2倍，放入离屏canvas
-        offscreenContext.drawImage(img, 0, 0, img.width, img.height, 0, 0, width, height);
-
+        offscreenContext.drawImage(img, 0, 0, width, height, 0, 0, width, height);
         // 不缩放, 画到主屏上
-        context.drawImage(
-          offscreenCanvas,
-          0, 0, width, height,
-          0, 0, width, height,
-        );
+        context.drawImage(offscreenCanvas, 0, 0, width, height, 0, 0, width, height);
       };
       // 阻止默认的拖放行为
       ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
@@ -290,6 +294,18 @@
         const files = e.dataTransfer.files;
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
+          console.log('file', file);
+          if (file.type.match("image.*")) {
+            reader.readAsDataURL(file);
+          }
+        }
+      });
+      uploadFile.addEventListener('change', (e) => {
+        console.log('file input', e.target.files);
+        if (e.target.files.length > 0) {
+          const file = e.target.files[0];
+          console.log('file', file);
+          // 是一张图片
           if (file.type.match("image.*")) {
             reader.readAsDataURL(file);
           }
@@ -307,7 +323,18 @@
             }
           }
         }
-      })
+      });
+      document.addEventListener('dblclick', (e) => {
+        console.log('db click');
+        e.preventDefault();
+        e.stopPropagation();
+      });
+      if (window.innerWidth <= 400) {
+        document.getElementById('file_upload_box').classList.remove('hide');
+        drawingBoard.drawText("上传图片...."); // 默认文案
+      } else {
+        drawingBoard.drawText("拖拽/粘贴图片上传...."); // 默认文案
+      }
     }
     main();
   };

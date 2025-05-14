@@ -7,19 +7,37 @@
 .page-container {
   padding: 16px;
   margin: 0 auto;
-}
-
-@media (min-width: 1080px) {
-  .page-container{
-    max-width: 1080px;
-  }
+  width: 1080px;
 }
 
 .container {
   border: 2px dashed #ccc;
   padding: 20px;
-  min-height: 450px;
-  min-width: 800px;
+  /* min-width: 800px;
+  min-height: 450px; */
+}
+
+@media screen and (min-width: 1080px) {
+  .page-container{
+    width: 1080px;
+  }
+
+  .container {
+    padding: 20px;
+    min-width: 800px;
+    min-height: 450px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .page-container{
+    width: 100%;
+    padding: 12px;
+  }
+  .container {
+    padding: 4px; 
+    width: 100%;
+  }
 }
 
 .dropzone {
@@ -83,4 +101,17 @@
 
 .export-btn:active {
   background-color: #cfcfcf;
+}
+
+.upload-box {
+  padding: 8px 0;
+}
+
+.file-upload {
+  background-color: #a5a0e1;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  height: auto;
 }
