@@ -1,5 +1,10 @@
 (function (window) {
   window.onload = () => {
+
+    function isUserMobile() {
+      const ua = navigator.userAgent.toLowerCase();
+      return /mobile|android|iphone|ipod|phone|ipad/i.test(ua);
+    }
     const MIN_SCALE = 20;
     const MAX_SCALE = 200;
     class DrawingBoard {
@@ -25,10 +30,15 @@
         this.renderPosition = {x: 0, y: 0};
         /** 绘制原点：控制缩放 */
         this.renderPositionFormScale = { x: 0, y: 0 };
+
+        this.baseX = 0;
+        this.baseY = 0;
+        this.baseScale = 100;
+
+        this.actionList = [];
         const rect = this.resize();
         this.resizeOffscreen(rect);
         this.initEvent();
-        this.initRange();
       }
 
       get Scale() {
@@ -46,14 +56,6 @@
         this.showRect = false;
       }
 
-      initRange() {
-        this.range.addEventListener('input', e => {
-          this.scale = Number(e.target.value);
-          this.rangeVal.innerText = `${e.target.value}%`;
-          this.render();
-        });
-      }
-
       initEvent() {
         let evenFlag = false;
         /** 用于记录move时的位移 */
@@ -62,6 +64,8 @@
           evenFlag = true;
           mousePoint.x = e.offsetX;
           mousePoint.y = e.offsetY;
+          // this.actionList.push({x: e.offsetX * this.dpr, y: e.offsetY * this.dpr });
+          // this.render();
         }
         const move = (e) => {
           if (evenFlag) {
@@ -83,6 +87,40 @@
           mousePoint.x = 0;
           mousePoint.y = 0;
         }
+        const touchStart = (e) => {
+          evenFlag = true;
+          mousePoint.x = e.touches[0].clientX;
+          mousePoint.y = e.touches[0].clientY;
+        }
+        const touchMove = (e) => {
+          if (evenFlag) {
+            const { clientX, clientY } = e.touches[0];
+            const changeX = (clientX - mousePoint.x) * this.dpr;
+            const changeY = (clientY - mousePoint.y) * this.dpr;
+            // 本次移动带来的
+            this.renderPosition.x += changeX;
+            this.renderPosition.y += changeY;
+            // 更新mouse偏移
+            mousePoint.x = clientX;
+            mousePoint.y = clientY;
+            this.render();
+          }
+        }
+        const previousOffset = {
+          x: NaN,
+          y: NaN,
+        }
+        this.range.addEventListener('input', e => {
+          if (isUserMobile()) {
+            // previousOffset.x = this.canvasWidth / 2;
+            // previousOffset.y = this.canvasHeight / 2;
+
+            this.setScaleMove(this.canvasWidth / this.dpr / 2, this.canvasHeight / this.dpr / 2, previousOffset, this.scale, Number(e.target.value));
+          }
+          this.scale = Number(e.target.value);
+          this.rangeVal.innerText = `${e.target.value}%`;
+          this.render();
+        });
         // TODO: 移动+缩放
         const wheel = (e) => {
           const {deltaX, deltaY, offsetX, offsetY, ctrlKey, metaKey, deltaMode} = e;
@@ -93,24 +131,27 @@
             const scaleFactor = Math.ceil(Math.abs(deltaY) / 10);
             if (deltaY > 0) {
               // 缩小
-              if (this.scale > MIN_SCALE && this.scale - scaleFactor >= MIN_SCALE) {
+              if (scaleFactor !== 0 && this.scale > MIN_SCALE && this.scale - scaleFactor >= MIN_SCALE) {
+                this.setScaleMove(offsetX, offsetY, previousOffset, this.scale, this.scale - scaleFactor);
                 this.scale -= scaleFactor;
+                this.range.value = this.scale;
+                this.rangeVal.innerText = `${this.scale}%`;
+                previousOffset.x = offsetX;
+                previousOffset.y = offsetY;
+                this.render();
               }
             } else {
               // 放大
-              if (this.scale < MAX_SCALE && this.scale + scaleFactor <= MAX_SCALE) {
+              if (scaleFactor !== 0 && this.scale < MAX_SCALE && this.scale + scaleFactor <= MAX_SCALE) {
+                this.setScaleMove(offsetX, offsetY, previousOffset, this.scale, this.scale + scaleFactor);
                 this.scale += scaleFactor;
+                this.range.value = this.scale;
+                this.rangeVal.innerText = `${this.scale}%`;
+                previousOffset.x = offsetX;
+                previousOffset.y = offsetY;
+                this.render();
               }
             }
-            this.range.value = this.scale;
-            this.rangeVal.innerText = `${this.scale}%`;
-            const dx = offsetX * this.dpr - this.renderPosition.x;
-            const dy = offsetY * this.dpr - this.renderPosition.y;
-            const x = dx - dx * this.Scale;
-            const y = dy - dy * this.Scale;
-            this.renderPositionFormScale.x = x;
-            this.renderPositionFormScale.y = y;
-            this.render();
           } else {
             // 更新 image 偏移
             this.renderPosition.x -= deltaX;
@@ -120,12 +161,13 @@
         }
 
         this.canvas.addEventListener("mousedown", down);
-        this.canvas.addEventListener('touchstart', down);
         this.canvas.addEventListener("mousemove", move);
-        this.canvas.addEventListener('touchmove', move);
         this.canvas.addEventListener("wheel", wheel); /// 应该用于scroll;
         this.canvas.addEventListener("mouseup", up);
         // canvas.addEventListener('mouseover', up);
+        // 移动端
+        this.canvas.addEventListener('touchstart', touchStart);
+        this.canvas.addEventListener('touchmove', touchMove);
         this.canvas.addEventListener('touchend', up);
 
 
@@ -179,6 +221,30 @@
         });
       }
 
+      setScaleMove(offsetX, offsetY, previousOffset, previousScale, afterScale) {
+        let originPositionX = this.renderPosition.x,
+            originPositionY = this.renderPosition.y;
+
+        // 更丝滑
+        if (!isNaN(previousOffset.x) && previousOffset.x !== offsetX) {
+          this.baseX = this.renderPositionFormScale.x;
+          this.baseScale = previousScale;
+        }
+        if (!isNaN(previousOffset.y) && previousOffset.y !== offsetY) {
+          this.baseY = this.renderPositionFormScale.y;
+          this.baseScale = previousScale;
+        }
+        // 转换成向量 [dx, dy]
+        const dx = offsetX * this.dpr - originPositionX - this.baseX;
+        const dy = offsetY * this.dpr - originPositionY - this.baseY;
+        // 缩小
+        const x = dx * (1 - afterScale / this.baseScale);
+        const y = dy * (1 - afterScale / this.baseScale);
+        // 向量平移
+        this.renderPositionFormScale.x = Math.floor(x + this.baseX);
+        this.renderPositionFormScale.y = Math.floor(y + this.baseY);
+      }
+
       cutRect(showRect) {
         if (showRect) {
           const { x, y, width, height } = this.exportPosition;
@@ -221,9 +287,11 @@
       }
 
       drawText(txt) {
+        this.context.save();
         this.context.font = "48px serif";
         const offset = this.context.measureText(txt);
         this.context.fillText(txt, this.canvasWidth / 2 - offset.width / 2, this.canvasHeight / 2);
+        this.context.restore();
       }
 
       render() {
@@ -241,6 +309,24 @@
         );
         this.context.restore();
         this.cutRect(this.showRect);
+
+        // this.actionList.forEach(({x, y}) => {
+        //   this.renderLine(x, y);
+        // });
+      }
+      renderLine(x, y) {
+        this.context.save();
+        this.context.beginPath();
+        this.context.moveTo(0, y);
+        this.context.lineTo(this.canvasWidth, y);
+        this.context.moveTo(x, 0);
+        this.context.lineTo(x, this.canvasHeight);
+        this.context.font = '26px serif';
+        this.context.fillText(`(${x},${y})`, x, y);
+        this.context.strokeStyle = '#F00';
+        this.context.lineWidth = this.dpr;
+        this.context.stroke();
+        this.context.restore();
       }
     }
 
