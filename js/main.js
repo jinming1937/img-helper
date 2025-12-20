@@ -13,6 +13,7 @@
         this.rangeVal = document.getElementById('range_val');
         this.canvas = document.getElementById("canvas");
         this.selectSize = document.getElementById('select_size');
+        this.rotateBtn = document.getElementById('rotate');
         this.context = this.canvas.getContext("2d");
         this.offscreenCanvas = new OffscreenCanvas(256, 256);
         this.offscreenContext = this.offscreenCanvas.getContext("2d");
@@ -34,6 +35,8 @@
         this.baseX = 0;
         this.baseY = 0;
         this.baseScale = 100;
+
+        this.rotateAngle = 0;
 
         this.actionList = [];
         const rect = this.resize();
@@ -170,6 +173,10 @@
         this.canvas.addEventListener('touchmove', touchMove);
         this.canvas.addEventListener('touchend', up);
 
+        this.rotateBtn.addEventListener('click', () => {
+          this.rotateAngle += 90;
+          this.render();
+        });
 
         this.selectSize.addEventListener('change', e => {
           const val = e.target.value;
@@ -302,6 +309,11 @@
         const { x: scaleX, y: scaleY } = this.renderPositionFormScale;
         this.context.translate(x + scaleX, y + scaleY);
         this.context.scale(scale, scale);
+
+        this.context.translate(this.offscreenCanvasWidth / 2, this.offscreenCanvasHeight / 2);
+        this.context.rotate(this.rotateAngle * Math.PI / 180);
+        this.context.translate(- this.offscreenCanvasWidth / 2, - this.offscreenCanvasHeight / 2);
+        
         this.context.drawImage(
           this.offscreenCanvas,
           0, 0, this.offscreenCanvasWidth, this.offscreenCanvasHeight,
@@ -355,6 +367,7 @@
         const width = img.width;
         const height = img.height;
         drawingBoard.resizeOffscreen({ width, height });
+        // TODO: 多图片支持 && 多图片选择 && 单张缩放旋转处理
         offscreenContext.drawImage(img, 0, 0, width, height, 0, 0, width, height);
         // 不缩放, 画到主屏上
         context.drawImage(offscreenCanvas, 0, 0, width, height, 0, 0, width, height);
@@ -380,17 +393,14 @@
         const files = e.dataTransfer.files;
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          console.log('file', file);
           if (file.type.match("image.*")) {
             reader.readAsDataURL(file);
           }
         }
       });
       uploadFile.addEventListener('change', (e) => {
-        console.log('file input', e.target.files);
         if (e.target.files.length > 0) {
           const file = e.target.files[0];
-          console.log('file', file);
           // 是一张图片
           if (file.type.match("image.*")) {
             reader.readAsDataURL(file);
@@ -411,7 +421,6 @@
         }
       });
       document.addEventListener('dblclick', (e) => {
-        console.log('db click');
         e.preventDefault();
         e.stopPropagation();
       });

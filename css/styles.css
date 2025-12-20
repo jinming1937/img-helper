@@ -90,7 +90,7 @@
   font-size: 14px;
   margin-right: 20px;
 }
-.export-btn {
+.export-btn, .rotate-btn {
   height: 20px;
   outline: none;
   border: none;
@@ -99,8 +99,12 @@
   border-radius: 4px;
 }
 
-.export-btn:active {
+.export-btn:active, .rotate-btn:active {
   background-color: #cfcfcf;
+}
+
+.rotate-btn {
+  margin-right: 20px;
 }
 
 .upload-box {
