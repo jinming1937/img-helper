@@ -310,9 +310,11 @@
         this.context.translate(x + scaleX, y + scaleY);
         this.context.scale(scale, scale);
 
-        this.context.translate(this.offscreenCanvasWidth / 2, this.offscreenCanvasHeight / 2);
-        this.context.rotate(this.rotateAngle * Math.PI / 180);
-        this.context.translate(- this.offscreenCanvasWidth / 2, - this.offscreenCanvasHeight / 2);
+        if (this.rotateAngle !== 0) {
+          this.context.translate(this.offscreenCanvasWidth / 2, this.offscreenCanvasHeight / 2);
+          this.context.rotate(this.rotateAngle * Math.PI / 180);
+          this.context.translate(- this.offscreenCanvasWidth / 2, - this.offscreenCanvasHeight / 2);
+        }
         
         this.context.drawImage(
           this.offscreenCanvas,
