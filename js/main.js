@@ -57,6 +57,7 @@
         this.renderPositionFormScale.y = 0;
         this.selectSize.value = 0;
         this.showRect = false;
+        this.rotateAngle = 0;
       }
 
       initEvent() {
@@ -174,7 +175,11 @@
         this.canvas.addEventListener('touchend', up);
 
         this.rotateBtn.addEventListener('click', () => {
-          this.rotateAngle += 90;
+          if (this.rotateAngle === 270) {
+            this.rotateAngle = 0;
+          } else {
+            this.rotateAngle += 90;
+          }
           this.render();
         });
 
@@ -362,8 +367,8 @@
         img.src = e.target.result;
       };
       img.onload = () => {
-        drawingBoard.resetCanvas();
         const { context, offscreenCanvas, offscreenContext } = drawingBoard;
+        drawingBoard.resetCanvas();
         drawingBoard.clear();
         // save
         const width = img.width;
