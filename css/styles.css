@@ -140,3 +140,13 @@
   position: fixed;
   bottom: 0;
 }
+
+.footer-bar a {
+  color: #666;
+  text-decoration: none;
+}
+
+.footer-bar a:hover {
+  color: #027bfe;
+  text-decoration: underline;
+}
