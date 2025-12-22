@@ -17,15 +17,8 @@
 在index.html里，照着已经有的option格式添加
 
 ```html
-<select id="select_size" value="" class="def_size">
-    <option value="0">请选择截图尺寸...</option>
-    <option value="250x122">250x122</option>
-    <option value="122x250">122x250</option>
-    <option value="296x128">296x128</option>
-    <option value="128x296">128x296</option>
-    <!-- <option value="300x400">300x400</option> -->
-    <option value="400x300">400x300</option>
+<optgroup label="其它常用尺寸">
     <option value="640x384">640x384</option>
     <!-- 这里可以添加更多尺寸... -->
-</select>
+</optgroup>
 ```

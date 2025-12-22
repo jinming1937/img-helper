@@ -9,6 +9,7 @@
 </head>
 <body>
   <div class="page-container">
+    <header class="header-bar">快速裁图</header>
     <div class="container">
       <div id="dropzone" class="dropzone">
         <canvas id="canvas" class="canvas_box"></canvas>
@@ -29,14 +30,28 @@
       <input class="rotate-btn" type="button" value="旋转" id="rotate" />
       <select id="select_size" value="" class="def_size">
         <option value="0">请选择截图尺寸...</option>
-        <option value="250x122">250x122</option>
-        <option value="122x250">122x250</option>
-        <option value="296x128">296x128</option>
-        <option value="128x296">128x296</option>
-        <!-- <option value="300x400">300x400</option> -->
-        <option value="400x300">400x300</option>
-        <option value="640x384">640x384</option>
-        <!-- 这里可以添加更多尺寸... -->
+        <optgroup label="2.13寸">
+          <option value="212x104">212x104</option>
+          <option value="104x212">104x212</option>
+          <option value="122x250">122x250</option>
+          <option value="296x128">296x128</option>
+        </optgroup>
+        <optgroup label="2.9寸">
+          <option value="128x296">128x296</option>
+          <option value="296x128">296x128</option>
+        </optgroup>
+        <optgroup label="4.3寸">
+          <option value="400x300">400x300</option>
+          <option value="300x400">300x400</option>
+        </optgroup>
+        <optgroup label="5.8寸">
+          <option value="600x448">600x448</option>
+          <option value="448x600">448x600</option>
+        </optgroup>
+        <optgroup label="其它常用尺寸">
+          <option value="640x384">640x384</option>
+          <!-- 这里可以添加更多尺寸... -->
+        </optgroup>
       </select>
       <input class="export-btn" type="button" value="导出" id="export" />
     </div>
@@ -49,5 +64,8 @@
       </p>
     </div>
   </div>
+  <footer class="footer-bar">
+    <p>© 2025 jinming1937 <a href="https://github.com/jinming1937/img-helper">Github</a></p>
+  </footer>
 </body>
 </html>
