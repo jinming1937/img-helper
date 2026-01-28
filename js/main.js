@@ -138,7 +138,7 @@
         // TODO: 移动+缩放
         const wheel = (e) => {
           const {deltaX, deltaY, offsetX, offsetY, ctrlKey, metaKey, deltaMode} = e;
-          e.preventDefault(); // 阻止浏览器的缩放行为
+          // e.preventDefault(); // 阻止浏览器的缩放行为
           e.stopImmediatePropagation(); // 阻止冒泡和其他监听器
 
           if (ctrlKey || metaKey) {
@@ -176,7 +176,7 @@
 
         this.canvas.addEventListener("mousedown", down);
         this.canvas.addEventListener("mousemove", move);
-        this.canvas.addEventListener("wheel", wheel, { passive: false }); /// 应该用于scroll;
+        this.canvas.addEventListener("wheel", wheel); /// 应该用于scroll;
         this.canvas.addEventListener("mouseup", up);
         // canvas.addEventListener('mouseover', up);
         // 移动端
