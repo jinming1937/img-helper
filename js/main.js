@@ -65,6 +65,8 @@
         /** 用于记录move时的位移 */
         const mousePoint = {x: 0,y: 0};
         const down = (e) => {
+          e.preventDefault();
+          e.stopImmediatePropagation();
           evenFlag = true;
           mousePoint.x = e.offsetX;
           mousePoint.y = e.offsetY;
@@ -73,6 +75,8 @@
         }
         const move = (e) => {
           if (evenFlag) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
             const { offsetX, offsetY } = e;
             const changeX = (offsetX - mousePoint.x) * this.dpr;
             const changeY = (offsetY - mousePoint.y) * this.dpr;
@@ -87,17 +91,23 @@
         }
 
         const up = (e) => {
+          e.preventDefault();
+          e.stopImmediatePropagation();
           evenFlag = false;
           mousePoint.x = 0;
           mousePoint.y = 0;
         }
         const touchStart = (e) => {
+          e.preventDefault();
+          e.stopImmediatePropagation();
           evenFlag = true;
           mousePoint.x = e.touches[0].clientX;
           mousePoint.y = e.touches[0].clientY;
         }
         const touchMove = (e) => {
           if (evenFlag) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
             const { clientX, clientY } = e.touches[0];
             const changeX = (clientX - mousePoint.x) * this.dpr;
             const changeY = (clientY - mousePoint.y) * this.dpr;
@@ -129,7 +139,7 @@
         const wheel = (e) => {
           const {deltaX, deltaY, offsetX, offsetY, ctrlKey, metaKey, deltaMode} = e;
           e.preventDefault(); // 阻止浏览器的缩放行为
-          e.stopPropagation(); // 无需冒泡
+          e.stopImmediatePropagation(); // 阻止冒泡和其他监听器
 
           if (ctrlKey || metaKey) {
             const scaleFactor = Math.ceil(Math.abs(deltaY) / 10);
@@ -166,13 +176,13 @@
 
         this.canvas.addEventListener("mousedown", down);
         this.canvas.addEventListener("mousemove", move);
-        this.canvas.addEventListener("wheel", wheel); /// 应该用于scroll;
+        this.canvas.addEventListener("wheel", wheel, { passive: false }); /// 应该用于scroll;
         this.canvas.addEventListener("mouseup", up);
         // canvas.addEventListener('mouseover', up);
         // 移动端
-        this.canvas.addEventListener('touchstart', touchStart);
-        this.canvas.addEventListener('touchmove', touchMove);
-        this.canvas.addEventListener('touchend', up);
+        this.canvas.addEventListener('touchstart', touchStart, { passive: false });
+        this.canvas.addEventListener('touchmove', touchMove, { passive: false });
+        this.canvas.addEventListener('touchend', up, { passive: false });
 
         this.rotateBtn.addEventListener('click', () => {
           if (this.rotateAngle === 270) {

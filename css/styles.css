@@ -79,6 +79,7 @@
   align-items: center;
   flex-wrap: wrap;
   height: 34px;
+  margin-bottom: 12px;
 }
 .range-bar {
   font-size: 14px;
@@ -128,6 +129,7 @@
   border-radius: 5px;
   font-size: 0.8rem;
   height: auto;
+  display: inline-block;
 }
 
 .footer-bar {
