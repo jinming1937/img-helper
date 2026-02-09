@@ -1,71 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Img-Helper</title>
-  <link rel="stylesheet" href="./css/styles.css">
-  <script src="./js/main.js"></script>
-</head>
-<body>
-  <div class="page-container">
-    <header class="header-bar">快速裁图</header>
-    <div class="container">
-      <div id="dropzone" class="dropzone">
-        <canvas id="canvas" class="canvas_box"></canvas>
-      </div>
-    </div>
-    <div id="file_upload_box" class="upload-box hide">
-      <label class="file-upload" for="upload_file">
-        点击选择上传图片...
-        <input type="file" class="hide" accept="image/*" id="upload_file" />
-      </label>
-    </div>
-    <div class="status-bar">
-      <div class="range-bar">
-        <span>缩放比例(20%~200%)</span>
-        <input type="range" id="range" min="20" max="200" value="100" class="range">
-        <span class="view-rate" id="range_val" />100%</span>
-      </div>
-      <input class="rotate-btn" type="button" value="旋转" id="rotate" />
-      <select id="select_size" value="" class="def_size">
-        <option value="0">请选择截图尺寸...</option>
-        <optgroup label="2.13寸">
-          <option value="212x104">212x104</option>
-          <option value="104x212">104x212</option>
-          <option value="122x250">122x250</option>
-          <option value="296x128">296x128</option>
-        </optgroup>
-        <optgroup label="2.9寸">
-          <option value="128x296">128x296</option>
-          <option value="296x128">296x128</option>
-        </optgroup>
-        <optgroup label="4.3寸">
-          <option value="400x300">400x300</option>
-          <option value="300x400">300x400</option>
-        </optgroup>
-        <optgroup label="5.8寸">
-          <option value="600x448">600x448</option>
-          <option value="448x600">448x600</option>
-        </optgroup>
-        <optgroup label="其它常用尺寸">
-          <option value="640x384">640x384</option>
-          <!-- 这里可以添加更多尺寸... -->
-        </optgroup>
-      </select>
-      <input class="export-btn" type="button" value="导出" id="export" />
-    </div>
-    <div class="hide">
-
-    </div>
-    <div>
-      <p>
-        说明：1. 拖拽或粘贴上传图片；2. 选择截图尺寸或自定义截图区域；3. 调整缩放比例；4. 点击导出按钮保存截图。
-      </p>
-    </div>
-  </div>
-  <footer class="footer-bar">
-    <p>© 2025 jinming1937 <a href="https://github.com/jinming1937/img-helper">Github</a></p>
-  </footer>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Img-Helper - 快速裁图</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
