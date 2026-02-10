@@ -1,0 +1,50 @@
+# Workflow 名称
+name: 前端打包并部署到 GitHub Pages
+
+# 触发条件：手动触发 + 推送到 main 分支时自动触发
+on:
+  workflow_dispatch: # 手动触发（推荐，可自主控制部署时机）
+  push:
+    branches: [ main ] # 推送到 main 分支时自动触发（可选）
+
+# 权限配置：必须授予写入 Pages 的权限
+permissions:
+  contents: read # 读取仓库内容
+  pages: write   # 写入 Pages
+  id-token: write # 用于 Pages 部署认证
+
+# 工作流任务
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # 运行环境：Ubuntu 最新版
+    steps:
+      # 1. 拉取仓库代码到运行环境
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      # 2. 设置 Node.js 环境（适配大多数前端项目，版本可根据你的项目调整）
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22' # 推荐 18+/20+，适配 Vite/Webpack
+          cache: 'npm' # 缓存 npm 依赖，加速下次构建
+
+      # 3. 安装依赖并打包构建
+      - name: 安装依赖 & 打包编译
+        run: |
+          npm install # 若用 yarn/pnpm 替换为 yarn install 或 pnpm install
+          npm run build # 核心打包命令，产物输出到 dist 目录
+
+      # 4. 配置 GitHub Pages 部署环境
+      - name: 配置 Pages
+        uses: actions/configure-pages@v5
+
+      # 5. 上传打包产物（dist 目录）作为部署工件
+      - name: 上传构建产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist' # 关键：指定前端打包产物目录（根据你的项目调整）
+
+      # 6. 部署到 GitHub Pages
+      - name: 部署到 GitHub Pages
+        uses: actions/deploy-pages@v4
