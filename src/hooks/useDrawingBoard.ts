@@ -9,7 +9,9 @@ export const useDrawingBoard = () => {
 
   useEffect(() => {
     if (canvasRef.current && !drawingBoardRef.current) {
-      drawingBoardRef.current = new DrawingBoard(canvasRef.current)
+      drawingBoardRef.current = new DrawingBoard(canvasRef.current, (scale) => {
+        setRange(scale)
+      })
     }
 
     return () => {
