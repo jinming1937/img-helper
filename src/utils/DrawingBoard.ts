@@ -34,8 +34,10 @@ export class DrawingBoard {
   private eventFlag: boolean = false
   private mousePoint: Position = { x: 0, y: 0 }
   private previousOffset: Position = { x: NaN, y: NaN }
+  private onScaleChange?: (scale: number) => void
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, onScaleChange?: (scale: number) => void) {
+    this.onScaleChange = onScaleChange
     this.canvas = canvas
     this.context = canvas.getContext('2d')!
     this.offscreenCanvas = new OffscreenCanvas(256, 256)
@@ -146,6 +148,7 @@ export class DrawingBoard {
             this.previousOffset.x = e.offsetX
             this.previousOffset.y = e.offsetY
             this.render()
+            this.onScaleChange?.(this.scale)
           }
         } else {
           if (
@@ -158,6 +161,7 @@ export class DrawingBoard {
             this.previousOffset.x = e.offsetX
             this.previousOffset.y = e.offsetY
             this.render()
+            this.onScaleChange?.(this.scale)
           }
         }
       } else {
