@@ -7,6 +7,10 @@ interface ControlBarProps {
   onRangeChange: (value: number) => void
   onRotate: () => void
   onSizeChange: (value: string) => void
+  customWidth?: string
+  customHeight?: string
+  onCustomWidthChange?: (value: string) => void
+  onCustomHeightChange?: (value: string) => void
   onExport: () => void
 }
 
@@ -14,10 +18,14 @@ export const ControlBar: React.FC<ControlBarProps> = ({
   range,
   rangeValue,
   selectSize,
+  customWidth,
+  customHeight,
   onRangeChange,
   onRotate,
   onSizeChange,
-  onExport
+  onExport,
+  onCustomWidthChange,
+  onCustomHeightChange
 }) => {
   return (
     <div className="status-bar">
@@ -68,8 +76,29 @@ export const ControlBar: React.FC<ControlBarProps> = ({
         </optgroup>
         <optgroup label="其它常用尺寸">
           <option value="640x384">640x384</option>
+          <option value="self">自定义</option>
         </optgroup>
       </select>
+      {selectSize === 'self' && (
+        <div className="custom-size-inputs">
+          <input
+            type="number"
+            min="1"
+            placeholder="宽 (px)"
+            className="custom-width"
+            value={customWidth ?? ''}
+            onChange={(e) => onCustomWidthChange?.(e.target.value)}
+          />
+          <input
+            type="number"
+            min="1"
+            placeholder="高 (px)"
+            className="custom-height"
+            value={customHeight ?? ''}
+            onChange={(e) => onCustomHeightChange?.(e.target.value)}
+          />
+        </div>
+      )}
       <input
         className="export-btn"
         type="button"

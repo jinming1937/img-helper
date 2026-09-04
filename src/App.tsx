@@ -16,6 +16,10 @@ function App() {
     onRotate,
     onSizeChange,
     onExport,
+    customWidth,
+    customHeight,
+    onCustomWidthChange,
+    onCustomHeightChange,
     onImageLoad,
     drawText
   } = useDrawingBoard()
@@ -42,6 +46,10 @@ function App() {
         onRangeChange={onRangeChange}
         onRotate={onRotate}
         onSizeChange={onSizeChange}
+        customWidth={customWidth}
+        customHeight={customHeight}
+        onCustomWidthChange={onCustomWidthChange}
+        onCustomHeightChange={onCustomHeightChange}
         onExport={onExport}
       />
 
